@@ -4,23 +4,16 @@ import { z } from "zod";
 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const createArticleSchema = z.object({
-  title: z.string()
-    .min(3, "Title must be at least 3 characters")
-    .max(120, "Title cannot exceed 120 characters"),
-  slug: z.string()
-    .min(3, "Slug must be at least 3 characters")
-    .max(120, "Slug cannot exceed 120 characters")
-    .regex(slugRegex, "Slug must contain only lowercase letters, numbers, and hyphens"),
-  excerpt: z.string()
-    .min(10, "Excerpt must be at least 10 characters")
-    .max(300, "Excerpt cannot exceed 300 characters"),
-  content: z.string().min(50, "Content must be at least 50 characters"),
-  image: z.string().url("Must be a valid URL").optional().default("/images/placeholder-article.jpg"),
+  title: z.string().min(3, "Title too short").max(120, "Title too long"),
+  slug: z.string().min(3).max(120).regex(slugRegex, "Invalid slug format"),
+  excerpt: z.string().min(10).max(300),
+  content: z.string().min(50),
+  image: z.string().url().optional().default("/images/placeholder-article.jpg"),
   author: z.string().optional().default("Admin"),
+  category: z.string().min(1, "Category ID is required"), // اضافه شد
   publishedAt: z.coerce.date().optional(),
   isPublished: z.boolean().default(false),
   viewCount: z.number().int().min(0).default(0),
-  category: z.string().min(1, "Category ID is required"), // will be transformed to ObjectId
 });
 
 export const updateArticleSchema = createArticleSchema.partial();
@@ -33,7 +26,7 @@ export const articleQuerySchema = z.object({
   author: z.string().optional(),
   fromDate: z.preprocess((val) => (val ? new Date(val as string) : undefined), z.date().optional()),
   toDate: z.preprocess((val) => (val ? new Date(val as string) : undefined), z.date().optional()),
-  category: z.string().optional(),
+  category: z.string().optional(), // اضافه شد
 });
 
 export type CreateArticleInput = z.infer<typeof createArticleSchema>;

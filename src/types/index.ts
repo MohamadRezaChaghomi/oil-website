@@ -156,3 +156,83 @@ export interface InputProps {
 export type WithId<T> = T & { _id: string };
 export type Nullable<T> = T | null;
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+// ========== Services & Caching ==========
+
+export interface PaginationParams {
+  page: number;
+  limit: number;
+  search?: string;
+}
+
+export interface PaginatedResult<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+// Article service specific
+export interface ArticleListItem {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  image?: string;
+  author?: string;
+  publishedAt?: Date;
+  isPublished: boolean;
+  viewCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface LatestArticle {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  publishedAt?: Date;
+}
+
+export type CachedArticlesResult = PaginatedResult<ArticleListItem>;
+
+// Product service specific
+export interface ProductListItem {
+  _id: string;
+  title: string;
+  slug: string;
+  description: string;
+  shortDescription?: string;
+  image?: string;
+  category: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type CachedProductsResult = PaginatedResult<ProductListItem>;
+
+// Category tree node
+export interface CategoryNode {
+  _id: string;
+  name: string;
+  slug: string;
+  type: 'product' | 'article';
+  parentId: string | null;
+  order: number;
+  isActive: boolean;
+  children: CategoryNode[];
+}
+
+// Message service
+export interface MessageFilter {
+  status?: 'pending' | 'read' | 'replied';
+  $or?: Array<Record<string, unknown>>;
+}
