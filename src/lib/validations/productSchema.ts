@@ -9,7 +9,7 @@ export const createProductSchema = z.object({
   description: z.string().min(20),
   shortDescription: z.string().max(200).optional(),
   image: z.string().url().optional().default("/images/placeholder-product.jpg"),
-  category: z.string().min(1, "Category ID required"),
+  category: z.string().min(1, "Category ID is required"), // تغییر به string برای ObjectId
   isActive: z.boolean().default(true),
 });
 
