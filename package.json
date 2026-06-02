@@ -7,7 +7,8 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ext .ts,.tsx --fix"
+    "lint": "eslint . --ext .ts,.tsx --fix",
+    "seed": "node --import tsx --env-file=.env.local scripts/seed.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -20,6 +21,7 @@
     "@types/three": "^0.184.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.4.2",
     "framer-motion": "^12.40.0",
     "ioredis": "^5.11.0",
     "lucide-react": "^1.16.0",
@@ -45,6 +47,7 @@
     "eslint-config-next": "15.2.4",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.0",
+    "tsx": "^4.22.4",
     "typescript": "^5"
   }
 }

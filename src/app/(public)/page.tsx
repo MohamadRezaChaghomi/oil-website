@@ -1,4 +1,3 @@
-// src/app/(public)/page.tsx
 import { dbConnect } from "@/lib/db";
 import Product from "@/lib/models/Product";
 import { HeroSection } from "@/components/sections/HeroSection";
@@ -8,7 +7,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "خانه | شرکت نفت و گاز",
-  description: "پیشرو در صنعت نفت، گاز و پتروشیمی با تعهد به تعالی و پایداری.",
+  description: "پیشرو در صنعت نفت، گاز و پتروشیمی",
 };
 
 export default async function HomePage() {
@@ -16,11 +15,12 @@ export default async function HomePage() {
   const products = await Product.find({ isActive: true })
     .sort({ createdAt: -1 })
     .limit(6)
-    .lean();
+    .lean(); 
 
   const plainProducts = products.map((product) => ({
     ...product,
     _id: product._id.toString(),
+    category: product.category.toString(),
   }));
 
   return (

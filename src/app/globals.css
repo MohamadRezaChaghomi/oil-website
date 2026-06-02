@@ -4,10 +4,65 @@
 @font-face {
   font-family: "Estedad";
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 100;
   font-display: swap;
-  src: url("//public//fonts//woff2/Estedad-Regular.woff2") format("woff2-variations"),
-       url("/public//fonts//ttf/Estedad-Regular.ttf") format("truetype");
+  src: url("/fonts/woff2/Estedad-Thin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Estedad";
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url("/fonts/woff2/Estedad-ExtraLight.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Estedad";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/woff2/Estedad-Light.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Estedad";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/woff2/Estedad-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Estedad";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/woff2/Estedad-Medium.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Estedad";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/woff2/Estedad-SemiBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Estedad";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/woff2/Estedad-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Estedad";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/woff2/Estedad-ExtraBold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Estedad";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/fonts/woff2/Estedad-Black.woff2") format("woff2");
 }
 
 /* ===== CSS VARIABLES (Light Mode) ===== */
@@ -25,12 +80,9 @@
   --muted-foreground: #94a3b8;
   --accent: #f1f5f9;
   --accent-foreground: #0f172a;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
   --radius: 0.75rem;
 }
 
-/* ===== DARK MODE ===== */
 .dark {
   --background: #0f172a;
   --foreground: #f1f5f9;
@@ -45,11 +97,8 @@
   --muted-foreground: #cbd5e1;
   --accent: #334155;
   --accent-foreground: #f1f5f9;
-  --destructive: #f87171;
-  --destructive-foreground: #0f172a;
 }
 
-/* ===== RESET ===== */
 * {
   border-color: var(--border);
   box-sizing: border-box;
@@ -64,41 +113,76 @@ body {
   color: var(--foreground);
   font-family: "Estedad", system-ui, sans-serif;
   direction: rtl;
+  font-size: 1rem;           /* 16px پایه */
   line-height: 1.6;
+  font-weight: 400;          /* وزن معمولی برای متن عادی */
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ===== TYPOGRAPHY ===== */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
+  font-weight: 700;          /* همه تیترها پررنگ */
   letter-spacing: -0.02em;
   line-height: 1.2;
 }
 
-h1 { font-size: clamp(2rem, 5vw, 3rem); }
-h2 { font-size: clamp(1.5rem, 4vw, 2.25rem); }
-h3 { font-size: clamp(1.25rem, 3vw, 1.875rem); }
+h1 {
+  font-size: clamp(2rem, 5vw, 3rem);     /* 32px تا 48px */
+}
+h2 {
+  font-size: clamp(1.5rem, 4vw, 2.25rem); /* 24px تا 36px */
+}
+h3 {
+  font-size: clamp(1.25rem, 3vw, 1.875rem); /* 20px تا 30px */
+}
+h4 {
+  font-size: 1.25rem;                    /* 20px */
+}
+h5 {
+  font-size: 1.125rem;                   /* 18px */
+}
+h6 {
+  font-size: 1rem;                       /* 16px */
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
 
 a {
   color: var(--primary);
   transition: color 0.2s;
+  text-decoration: none;
 }
-a:hover { color: var(--secondary); }
+a:hover {
+  color: var(--secondary);
+}
 
-/* ===== SCROLLBAR ===== */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--background); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+/* ===== اسکرول و سایر استایل‌ها (بدون تغییر) ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
 
-/* ===== UTILITIES ===== */
 ::selection {
   background-color: var(--primary);
   color: var(--primary-foreground);
 }
 
-/* ===== ANIMATIONS ===== */
+/* ===== انیمیشن‌ها ===== */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -115,13 +199,12 @@ a:hover { color: var(--secondary); }
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
 }
-
 .animate-fade-up { animation: fade-up 0.6s ease-out forwards; }
 .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
 .animate-slide-in-right { animation: slide-in-right 0.5s ease-out forwards; }
 .animate-float { animation: float 4s ease-in-out infinite; }
 
-/* ===== LOADING SKELETON ===== */
+/* ===== اسکلتون لودینگ ===== */
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
@@ -129,11 +212,4 @@ a:hover { color: var(--secondary); }
 .skeleton {
   background: var(--muted);
   animation: pulse 1.5s ease-in-out infinite;
-}
-/* Add to globals.css */
-.hover-glow {
-  transition: box-shadow 0.3s ease;
-}
-.hover-glow:hover {
-  box-shadow: 0 0 15px rgba(230, 126, 34, 0.3);
 }

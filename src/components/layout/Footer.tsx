@@ -2,18 +2,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import {
-  Facebook,
-  Twitter,
-  LinkedIn,
-  Email,
-  Phone,
-  LocationOn,
-  Send,
-} from "@mui/icons-material";
+import { Facebook, Twitter, LinkedIn, Email, Phone, LocationOn, Send } from "@mui/icons-material";
 import { Button } from "@/components/ui/Button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const footerLinks = {
   company: [
@@ -33,12 +26,6 @@ export function Footer() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
-  const [mounted, setMounted] = useState(false);
-
-  // Prevent hydration mismatch by rendering only after mount
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,41 +55,6 @@ export function Footer() {
     }
   };
 
-  // تا زمانی که mounted === false، فقط یک placeholder ساده (یا همان محتوای استاتیک بدون status) رندر کن
-  if (!mounted) {
-    return (
-      <footer className="relative bg-card border-t border-border mt-auto overflow-hidden">
-        <div className="container mx-auto px-4 py-12 md:py-16">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {/* ... همان محتوا ولی بدون بخش متغیر status ... */}
-            <div className="space-y-4">
-              <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-secondary drop-shadow-sm">
-                شرکت نفت و گاز
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                ارائه خدمات تخصصی و محصولات باکیفیت در صنایع نفت، گاز و پتروشیمی با تکیه بر فناوری روز و کادربا تجربه.
-              </p>
-              <div className="pt-4">
-                <h4 className="font-semibold text-foreground mb-2">خبرنامه</h4>
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    placeholder="ایمیل شما"
-                    className="flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm"
-                    disabled
-                  />
-                  <Button size="sm" disabled>ارسال</Button>
-                </div>
-              </div>
-            </div>
-            {/* سایر بخش‌ها به همین صورت استاتیک */}
-          </div>
-        </div>
-      </footer>
-    );
-  }
-
-  // رندر کامل با state (فقط در کلاینت)
   return (
     <footer className="relative bg-card border-t border-border mt-auto overflow-hidden">
       {/* Background pattern */}
@@ -125,9 +77,18 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand & Newsletter */}
           <div className="space-y-4">
-            <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-secondary drop-shadow-sm">
-              شرکت نفت و گاز
-            </h3>
+            <Link href="/" className="flex items-center gap-3">
+              <Image
+                src="/images/logo.svg"
+                alt="شرکت نفت و گاز"
+                width={40}
+                height={40}
+                className="h-10 w-auto object-contain drop-shadow-sm"
+              />
+              <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-secondary drop-shadow-sm">
+                شرکت نفت و گاز
+              </h3>
+            </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
               ارائه خدمات تخصصی و محصولات باکیفیت در صنایع نفت، گاز و پتروشیمی با تکیه بر فناوری روز و کادربا تجربه.
             </p>
@@ -163,10 +124,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               {footerLinks.company.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
-                  >
+                  <Link href={link.href} className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group">
                     <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all" />
                     {link.name}
                   </Link>
@@ -181,10 +139,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               {footerLinks.services.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
-                  >
+                  <Link href={link.href} className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group">
                     <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all" />
                     {link.name}
                   </Link>
@@ -207,47 +162,22 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Email className="h-4 w-4" />
-                <a href="mailto:info@oilgasco.com" className="hover:text-primary transition-colors">
-                  info@oilgasco.com
-                </a>
+                <a href="mailto:info@oilgasco.com" className="hover:text-primary transition-colors">info@oilgasco.com</a>
               </li>
             </ul>
             <div className="flex space-x-4 space-x-reverse mt-4">
-              <motion.a
-                href="#"
-                whileHover={{ scale: 1.1 }}
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <LinkedIn className="h-5 w-5" />
-              </motion.a>
-              <motion.a
-                href="#"
-                whileHover={{ scale: 1.1 }}
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Twitter className="h-5 w-5" />
-              </motion.a>
-              <motion.a
-                href="#"
-                whileHover={{ scale: 1.1 }}
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Facebook className="h-5 w-5" />
-              </motion.a>
+              <motion.a whileHover={{ scale: 1.1 }} href="#" className="text-muted-foreground hover:text-primary transition-colors"><LinkedIn className="h-5 w-5" /></motion.a>
+              <motion.a whileHover={{ scale: 1.1 }} href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter className="h-5 w-5" /></motion.a>
+              <motion.a whileHover={{ scale: 1.1 }} href="#" className="text-muted-foreground hover:text-primary transition-colors"><Facebook className="h-5 w-5" /></motion.a>
             </div>
           </div>
         </div>
 
-        {/* Bottom bar */}
         <div className="mt-8 pt-6 border-t border-border flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-muted-foreground">
           <span>© {currentYear} شرکت نفت و گاز. تمام حقوق محفوظ است.</span>
           <div className="flex gap-4">
-            <Link href="/privacy" className="hover:text-primary transition-colors">
-              حریم خصوصی
-            </Link>
-            <Link href="/terms" className="hover:text-primary transition-colors">
-              شرایط استفاده
-            </Link>
+            <Link href="/privacy" className="hover:text-primary transition-colors">حریم خصوصی</Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">شرایط استفاده</Link>
           </div>
         </div>
       </div>

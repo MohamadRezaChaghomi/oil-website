@@ -1,3 +1,4 @@
+// src/components/ui/ThemeToggle.tsx
 "use client";
 
 import { useTheme } from "next-themes";
@@ -22,7 +23,14 @@ export function ThemeToggle({ isScrolled = true }: ThemeToggleProps) {
       variant="ghost"
       size="icon"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className={cn(!isScrolled && "text-white")}
+      className={cn(
+        "transition-all",
+        // در حالت اسکرول شده: رنگ آیکون مطابق با متن (foreground)
+        // در حالت هیرو (اسکرول نشده): آیکون سفید با سایه (مانند بقیه عناصر هدر)
+        isScrolled
+          ? "text-foreground"
+          : "text-white drop-shadow-md"
+      )}
     >
       {isDark ? <Brightness7 className="h-5 w-5" /> : <Brightness4 className="h-5 w-5" />}
     </Button>

@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -21,28 +23,28 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const heroRef = useRef<HTMLElement | null>(null);
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    // پیدا کردن هیرو سکشن (با کلاس یا آی‌دی)
     const heroElement = document.querySelector("section.hero-section");
-    if (heroElement) {
-      heroRef.current = heroElement as HTMLElement;
-    }
+    if (heroElement) heroRef.current = heroElement as HTMLElement;
+    else heroRef.current = null;
   }, []);
 
   useEffect(() => {
     const handleScroll = () => {
       if (heroRef.current) {
         const heroBottom = heroRef.current.offsetTop + heroRef.current.offsetHeight;
-        const scrolledPastHero = window.scrollY > heroBottom - 100; // 100px مارجین
-        setIsScrolled(scrolledPastHero);
+        setIsScrolled(window.scrollY > heroBottom - 80);
       } else {
-        // اگر هیرویی نبود (مثل صفحات داخلی)، بلافاصله اسکرولد شود
         setIsScrolled(window.scrollY > 20);
       }
     };
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // اجرای اولیه
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -51,6 +53,11 @@ export function Header() {
     else document.body.style.overflow = "";
     return () => { document.body.style.overflow = ""; };
   }, [isDrawerOpen]);
+
+  const getLogoSrc = () => {
+    if (!mounted) return "/images/logo.svg";
+    return "/images/logo.svg";
+  };
 
   return (
     <>
@@ -63,29 +70,42 @@ export function Header() {
         )}
       >
         <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          {/* Logo + Company Name - همیشه سفید در هیرو */}
+          <Link href="/" className="flex items-center gap-3 shrink-0">
+            <Image
+              src={getLogoSrc()}
+              alt="شرکت نفت و گاز"
+              width={40}
+              height={40}
+              className={cn(
+                "h-10 w-auto object-contain transition-all duration-200",
+                isScrolled ? "drop-shadow-md" : "drop-shadow-lg"
+              )}
+              priority
+            />
             <span
               className={cn(
                 "text-xl font-bold transition-all",
                 isScrolled
-                  ? "text-foreground" // به جای گرادینت، رنگ ساده foreground که در هر تم خواناست
-                  : "text-white"
+                  ? "text-foreground"
+                  : "text-white drop-shadow-md"
               )}
             >
               شرکت نفت و گاز
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
+          {/* Desktop Navigation - لینک‌ها در هیرو سفید */}
+          <nav className="hidden md:flex flex-1 items-center justify-center gap-6">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  isScrolled ? "text-foreground/80" : "text-white"
+                  "text-base font-medium transition-colors duration-200",
+                  isScrolled
+                    ? "text-foreground/80 hover:text-primary"
+                    : "text-white hover:text-orange-200 drop-shadow-sm"
                 )}
               >
                 {item.name}
@@ -93,12 +113,16 @@ export function Header() {
             ))}
           </nav>
 
+          {/* Actions - دکمه تم و منوی موبایل در هیرو سفید */}
           <div className="flex items-center gap-2">
             <ThemeToggle isScrolled={isScrolled} />
             <Button
               variant="ghost"
               size="icon"
-              className={cn("md:hidden", isScrolled ? "text-foreground" : "text-white")}
+              className={cn(
+                "md:hidden transition-all",
+                isScrolled ? "text-foreground" : "text-white drop-shadow-sm"
+              )}
               onClick={() => setIsDrawerOpen(true)}
             >
               <Menu className="h-5 w-5" />

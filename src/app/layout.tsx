@@ -1,3 +1,4 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Header } from "@/components/layout/Header";
@@ -12,34 +13,40 @@ export const metadata: Metadata = {
     default: "شرکت نفت و گاز | پیشرو در صنعت انرژی",
     template: "%s | شرکت نفت و گاز",
   },
-  description: "ارائه خدمات تخصصی و محصولات باکیفیت در صنایع نفت، گاز و پتروشیمی با تکیه بر فناوری روز و کادربا تجربه",
-  keywords: ["نفت", "گاز", "پتروشیمی", "انرژی", "حفاری", "پالایشگاه", "مشاوره صنعتی"],
-  authors: [{ name: "شرکت نفت و گاز" }],
+  description: "ارائه خدمات تخصصی و محصولات باکیفیت در صنایع نفت، گاز و پتروشیمی",
+  icons: {
+    icon: [
+      { url: "/images/favicon.ico", sizes: "any" },
+      { url: "/images/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/images/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/images/logo.svg", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/images/apple-touch-icon.png", sizes: "180x180", type: "image/png" }, // در صورت نداشتن فایل، این خط را حذف کنید
+    ],
+  },
   openGraph: {
     title: "شرکت نفت و گاز | پیشرو در صنعت انرژی",
-    description: "خدمات تخصصی نفت، گاز و پتروشیمی",
+    description: "ارائه خدمات تخصصی و محصولات باکیفیت در صنایع نفت، گاز و پتروشیمی",
     url: siteUrl,
     siteName: "شرکت نفت و گاز",
     locale: "fa_IR",
     type: "website",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "شرکت نفت و گاز" }],
+    images: [
+      {
+        url: "/images/og-image.png", // توصیه می‌شود یک تصویر 1200x630 در این مسیر قرار دهید
+        width: 1200,
+        height: 630,
+        alt: "شرکت نفت و گاز",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "شرکت نفت و گاز",
-    description: "خدمات تخصصی نفت، گاز و پتروشیمی",
-    images: ["/og-image.png"],
+    title: "شرکت نفت و گاز | پیشرو در صنعت انرژی",
+    description: "ارائه خدمات تخصصی و محصولات باکیفیت در صنایع نفت، گاز و پتروشیمی",
+    images: ["/images/og-image.png"],
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large" },
-  },
-  icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-  },
-  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
