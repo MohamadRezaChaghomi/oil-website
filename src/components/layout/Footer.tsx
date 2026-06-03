@@ -24,9 +24,9 @@ const footerLinks = {
     { name: "وبلاگ", href: "/blog" },
   ],
   services: [
-    { name: "مشاوره صنعتی", href: "/services/consulting" },
-    { name: "تامین تجهیزات", href: "/services/equipment" },
-    { name: "پشتیبانی فنی", href: "/services/support" },
+    { name: "مشاوره صنعتی", href: "/services" },
+    { name: "تامین تجهیزات", href: "/services" },
+    { name: "پشتیبانی فنی", href: "/services" },
   ],
 };
 
@@ -137,12 +137,12 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Company Links */}
+          {/* Company Links - استفاده از name به عنوان کلید */}
           <div>
             <h4 className="font-semibold text-lg mb-4 text-foreground">شرکت</h4>
             <ul className="space-y-2 text-sm">
               {footerLinks.company.map((link) => (
-                <li key={link.href}>
+                <li key={link.name}>
                   <Link href={link.href} className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group">
                     <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all" />
                     {link.name}
@@ -152,12 +152,12 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Services Links */}
+          {/* Services Links - استفاده از name به عنوان کلید (منحصربه‌فرد) */}
           <div>
             <h4 className="font-semibold text-lg mb-4 text-foreground">خدمات</h4>
             <ul className="space-y-2 text-sm">
               {footerLinks.services.map((link) => (
-                <li key={link.href}>
+                <li key={link.name}>
                   <Link href={link.href} className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group">
                     <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all" />
                     {link.name}
@@ -172,61 +172,25 @@ export function Footer() {
             <h4 className="font-semibold text-lg mb-4 text-foreground">تماس با ما</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2 text-muted-foreground">
-                <LocationOn className="h-4 w-4 text-muted-foreground" />
+                <LocationOn className="h-4 w-4" />
                 <span>تهران، خیابان ولیعصر، پلاک ۱۲۳</span>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
-                <Phone className="h-4 w-4 text-muted-foreground" />
+                <Phone className="h-4 w-4" />
                 <span dir="ltr">+98 21 1234 5678</span>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
-                <Email className="h-4 w-4 text-muted-foreground" />
+                <Email className="h-4 w-4" />
                 <a href="mailto:info@oilgasco.com" className="hover:text-primary transition-colors">
                   info@oilgasco.com
                 </a>
               </li>
             </ul>
             <div className="flex flex-wrap gap-4 mt-4">
-              <motion.a
-                whileHover={{ scale: 1.1 }}
-                href="https://x.com/yourcompany"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="X (توئیتر)"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Twitter className="h-5 w-5" />
-              </motion.a>
-              <motion.a
-                whileHover={{ scale: 1.1 }}
-                href="https://instagram.com/yourcompany"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="اینستاگرام"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Instagram className="h-5 w-5" />
-              </motion.a>
-              <motion.a
-                whileHover={{ scale: 1.1 }}
-                href="https://t.me/yourcompany"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="تلگرام"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Telegram className="h-5 w-5" />
-              </motion.a>
-              <motion.a
-                whileHover={{ scale: 1.1 }}
-                href="https://wa.me/989123456789"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="واتساپ"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <WhatsApp className="h-5 w-5" />
-              </motion.a>
+              <motion.a whileHover={{ scale: 1.1 }} href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter className="h-5 w-5" /></motion.a>
+              <motion.a whileHover={{ scale: 1.1 }} href="#" className="text-muted-foreground hover:text-primary transition-colors"><Instagram className="h-5 w-5" /></motion.a>
+              <motion.a whileHover={{ scale: 1.1 }} href="#" className="text-muted-foreground hover:text-primary transition-colors"><Telegram className="h-5 w-5" /></motion.a>
+              <motion.a whileHover={{ scale: 1.1 }} href="#" className="text-muted-foreground hover:text-primary transition-colors"><WhatsApp className="h-5 w-5" /></motion.a>
             </div>
           </div>
         </div>

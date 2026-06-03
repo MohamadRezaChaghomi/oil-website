@@ -14,7 +14,11 @@ export default function ServicesPage() {
   return (
     <main className="relative overflow-hidden">
       <ServicesHero />
-      <ServicesGrid />
+      <section className="pt-24 pb-16 bg-gradient-to-b from-background to-card/20">
+        <div className="container mx-auto px-4">
+          <ServicesGrid />
+        </div>
+      </section>
       <ServicesCTA />
     </main>
   );
