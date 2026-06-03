@@ -1,18 +1,18 @@
 // src/lib/db.ts
 import mongoose from "mongoose";
+import "./models/Category";   // ثبت مدل Category
+import "./models/Article";    // ثبت مدل Article
+import "./models/Product";    // ثبت مدل Product
+import "./models/Message";    // ثبت مدل Message
+import "./models/Subscriber"; // ثبت مدل Subscriber
+import "./models/Settings";    // ثبت مدل Setting
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
 if (!MONGODB_URI) {
-  throw new Error(
-    "❌ Please define MONGODB_URI environment variable inside .env.local"
-  );
+  throw new Error("❌ Please define MONGODB_URI environment variable inside .env.local");
 }
 
-/**
- * Global cache for mongoose connection to prevent multiple connections
- * in development mode (hot reloading)
- */
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
@@ -29,21 +29,16 @@ if (!global.mongoose) {
   global.mongoose = cached;
 }
 
-/**
- * Connects to MongoDB using mongoose with connection pooling
- * @returns Promise of mongoose instance
- */
 export async function dbConnect(): Promise<typeof mongoose> {
   if (cached.conn) {
-    // Return existing connection
     return cached.conn;
   }
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false, // Disable command buffering (recommended for serverless)
-      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
-      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
     };
 
     cached.promise = mongoose
@@ -54,7 +49,7 @@ export async function dbConnect(): Promise<typeof mongoose> {
       })
       .catch((error) => {
         console.error("❌ MongoDB connection error:", error);
-        cached.promise = null; // Reset promise so next call retries
+        cached.promise = null;
         throw error;
       });
   }
