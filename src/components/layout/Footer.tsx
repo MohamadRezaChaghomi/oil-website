@@ -4,9 +4,18 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Facebook, Twitter, LinkedIn, Email, Phone, LocationOn, Send } from "@mui/icons-material";
+import {
+  LocationOn,
+  Phone,
+  Email,
+  Send,
+  Twitter,
+  Instagram,
+  Telegram,
+  WhatsApp,
+} from "@mui/icons-material";
 import { Button } from "@/components/ui/Button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const footerLinks = {
   company: [
@@ -26,10 +35,16 @@ export function Footer() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [isEmailValid, setIsEmailValid] = useState(false);
+
+  useEffect(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setIsEmailValid(emailRegex.test(email));
+  }, [email]);
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!isEmailValid || status === "loading") return;
     setStatus("loading");
     try {
       const res = await fetch("/api/public/newsletter", {
@@ -57,7 +72,6 @@ export function Footer() {
 
   return (
     <footer className="relative bg-card border-t border-border mt-auto overflow-hidden">
-      {/* Background pattern */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
         <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -105,7 +119,12 @@ export function Footer() {
                     className="flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                     disabled={status === "loading"}
                   />
-                  <Button type="submit" size="sm" className="gap-1" disabled={status === "loading"}>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className="gap-1"
+                    disabled={!isEmailValid || status === "loading"}
+                  >
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
@@ -153,22 +172,61 @@ export function Footer() {
             <h4 className="font-semibold text-lg mb-4 text-foreground">تماس با ما</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2 text-muted-foreground">
-                <LocationOn className="h-4 w-4" />
+                <LocationOn className="h-4 w-4 text-muted-foreground" />
                 <span>تهران، خیابان ولیعصر، پلاک ۱۲۳</span>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
-                <Phone className="h-4 w-4" />
+                <Phone className="h-4 w-4 text-muted-foreground" />
                 <span dir="ltr">+98 21 1234 5678</span>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
-                <Email className="h-4 w-4" />
-                <a href="mailto:info@oilgasco.com" className="hover:text-primary transition-colors">info@oilgasco.com</a>
+                <Email className="h-4 w-4 text-muted-foreground" />
+                <a href="mailto:info@oilgasco.com" className="hover:text-primary transition-colors">
+                  info@oilgasco.com
+                </a>
               </li>
             </ul>
-            <div className="flex space-x-4 space-x-reverse mt-4">
-              <motion.a whileHover={{ scale: 1.1 }} href="#" className="text-muted-foreground hover:text-primary transition-colors"><LinkedIn className="h-5 w-5" /></motion.a>
-              <motion.a whileHover={{ scale: 1.1 }} href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter className="h-5 w-5" /></motion.a>
-              <motion.a whileHover={{ scale: 1.1 }} href="#" className="text-muted-foreground hover:text-primary transition-colors"><Facebook className="h-5 w-5" /></motion.a>
+            <div className="flex flex-wrap gap-4 mt-4">
+              <motion.a
+                whileHover={{ scale: 1.1 }}
+                href="https://x.com/yourcompany"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X (توئیتر)"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Twitter className="h-5 w-5" />
+              </motion.a>
+              <motion.a
+                whileHover={{ scale: 1.1 }}
+                href="https://instagram.com/yourcompany"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="اینستاگرام"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Instagram className="h-5 w-5" />
+              </motion.a>
+              <motion.a
+                whileHover={{ scale: 1.1 }}
+                href="https://t.me/yourcompany"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="تلگرام"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Telegram className="h-5 w-5" />
+              </motion.a>
+              <motion.a
+                whileHover={{ scale: 1.1 }}
+                href="https://wa.me/989123456789"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="واتساپ"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                <WhatsApp className="h-5 w-5" />
+              </motion.a>
             </div>
           </div>
         </div>
