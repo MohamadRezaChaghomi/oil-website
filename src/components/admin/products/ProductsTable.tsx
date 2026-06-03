@@ -64,7 +64,7 @@ export function ProductsTable({ products }: ProductsTableProps) {
               <th className="px-4 py-3 text-right text-sm font-medium text-foreground">وضعیت</th>
               <th className="px-4 py-3 text-right text-sm font-medium text-foreground">تاریخ ایجاد</th>
               <th className="px-4 py-3 text-right text-sm font-medium text-foreground">عملیات</th>
-            </td>
+            </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {products.map((product) => (
