@@ -1,69 +1,46 @@
 // src/lib/redis.ts
 import Redis from "ioredis";
 
+let redisClient: Redis | null = null;
+let connectionAttempted = false;
+
 const REDIS_URL = process.env.REDIS_URL;
 
-if (!REDIS_URL) {
-  throw new Error("❌ Please define REDIS_URL environment variable inside .env.local");
+/**
+ * Returns a Redis client only if already connected.
+ * No automatic connection attempts.
+ */
+export function getRedis(): Redis | null {
+  return redisClient;
 }
 
 /**
- * Global Redis client instance (singleton pattern)
- * Prevents multiple connections in development mode
+ * Attempts to connect to Redis once. Call this manually if needed.
  */
-declare global {
-  // eslint-disable-next-line no-var
-  var redisClient: Redis | undefined;
-}
+export async function initRedis(): Promise<void> {
+  if (!REDIS_URL || connectionAttempted) return;
+  connectionAttempted = true;
 
-let redis: Redis;
+  try {
+    const client = new Redis(REDIS_URL, {
+      maxRetriesPerRequest: 0,
+      retryStrategy: () => null,
+      lazyConnect: true,
+      connectTimeout: 2000,
+    });
 
-if (!global.redisClient) {
-  redis = new Redis(REDIS_URL, {
-    maxRetriesPerRequest: 3,
-    retryStrategy: (times: number) => {
-      const delay = Math.min(times * 50, 2000);
-      console.warn(`⚠️ Redis connection retry ${times} in ${delay}ms`);
-      return delay;
-    },
-    lazyConnect: false,
-    enableReadyCheck: true,
-  });
+    // Ignore all errors silently
+    client.on("error", () => {});
 
-  // Event handlers for monitoring
-  redis.on("connect", () => {
-    console.log("🔌 Redis connecting...");
-  });
-
-  redis.on("ready", () => {
-    console.log("✅ Redis connected successfully");
-  });
-
-  redis.on("error", (error) => {
-    console.error("❌ Redis error:", error);
-  });
-
-  redis.on("close", () => {
-    console.warn("⚠️ Redis connection closed");
-  });
-
-  redis.on("reconnecting", () => {
-    console.log("🔄 Redis reconnecting...");
-  });
-
-  global.redisClient = redis;
-} else {
-  redis = global.redisClient;
-}
-
-export { redis };
-export default redis;
-
-// Graceful shutdown
-process.on("SIGINT", async () => {
-  if (redis) {
-    await redis.quit();
-    console.log("Redis connection closed due to app termination");
+    await client.connect();
+    console.log("✅ Redis connected");
+    redisClient = client;
+  } catch {
+    // Silently ignore connection failures
   }
-  process.exit(0);
-});
+}
+
+// Optional: auto-init on first import (but without blocking)
+if (process.env.NODE_ENV === "production") {
+  initRedis().catch(() => {});
+}

@@ -1,8 +1,8 @@
 import { dbConnect } from "@/lib/db";
 import Product from "@/lib/models/Product";
-import { HeroSection } from "@/components/sections/HeroSection";
-import { ServicesSection } from "@/components/sections/ServicesSection";
-import { ProductsShowcase } from "@/components/sections/ProductsShowcase";
+import { HeroSection } from "@/components/sections/home/HeroSection";
+import { ServicesSection } from "@/components/sections/home/ServicesSection";
+import { ProductsShowcase } from "@/components/sections/home/ProductsShowcase";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

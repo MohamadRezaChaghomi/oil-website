@@ -7,8 +7,7 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ext .ts,.tsx --fix",
-    "seed": "node --import tsx --env-file=.env.local scripts/seed.ts"
+    "lint": "eslint . --ext .ts,.tsx --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
