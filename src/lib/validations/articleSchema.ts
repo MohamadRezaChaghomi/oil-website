@@ -3,6 +3,14 @@ import { z } from "zod";
 
 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+// Preprocessor for isActive/isPublished to accept both string and boolean
+const booleanPreprocessor = (val: unknown) => {
+  if (typeof val === "boolean") return val;
+  if (val === "true") return true;
+  if (val === "false") return false;
+  return undefined;
+};
+
 export const createArticleSchema = z.object({
   title: z.string().min(3, "Title too short").max(120, "Title too long"),
   slug: z.string().min(3).max(120).regex(slugRegex, "Invalid slug format"),
@@ -10,7 +18,7 @@ export const createArticleSchema = z.object({
   content: z.string().min(50),
   image: z.string().url().optional().default("/images/placeholder-article.jpg"),
   author: z.string().optional().default("Admin"),
-  category: z.string().min(1, "Category ID is required"), // اضافه شد
+  category: z.string().min(1, "Category ID is required"),
   publishedAt: z.coerce.date().optional(),
   isPublished: z.boolean().default(false),
   viewCount: z.number().int().min(0).default(0),
@@ -19,14 +27,14 @@ export const createArticleSchema = z.object({
 export const updateArticleSchema = createArticleSchema.partial();
 
 export const articleQuerySchema = z.object({
-  isPublished: z.enum(["true", "false"]).optional().transform(v => v === "true"),
+  isPublished: z.preprocess(booleanPreprocessor, z.boolean().optional()),
   page: z.preprocess((val) => Number(val) || 1, z.number().int().positive().default(1)),
   limit: z.preprocess((val) => Number(val) || 10, z.number().int().min(1).max(100).default(10)),
   search: z.string().optional(),
   author: z.string().optional(),
   fromDate: z.preprocess((val) => (val ? new Date(val as string) : undefined), z.date().optional()),
   toDate: z.preprocess((val) => (val ? new Date(val as string) : undefined), z.date().optional()),
-  category: z.string().optional(), // اضافه شد
+  category: z.string().optional(),
 });
 
 export type CreateArticleInput = z.infer<typeof createArticleSchema>;

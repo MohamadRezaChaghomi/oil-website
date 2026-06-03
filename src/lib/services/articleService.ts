@@ -1,3 +1,4 @@
+// src/lib/services/articleService.ts
 import mongoose from "mongoose";
 import { dbConnect } from "@/lib/db";
 import Article from "@/lib/models/Article";
@@ -12,16 +13,43 @@ import type {
   ArticleQueryInput,
 } from "@/lib/validations/articleSchema";
 import { getCache, setCache, deleteCachePattern } from "@/lib/cache";
-import { toPlainObject, toPlainObjects } from "@/lib/utils/mongoose";
+import { toPlainObject } from "@/lib/utils/mongoose";
 
 const ARTICLES_CACHE_TTL = 60;
 const LATEST_CACHE_TTL = 300;
 
-export async function getArticles(query: ArticleQueryInput) {
+export interface CachedArticlesResult {
+  data: Array<{
+    _id: string;
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    image?: string;
+    author?: string;
+    category: string;
+    categoryName: string;
+    publishedAt?: Date;
+    isPublished: boolean;
+    viewCount: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+export async function getArticles(query: ArticleQueryInput): Promise<CachedArticlesResult> {
   await dbConnect();
   const validatedQuery = articleQuerySchema.parse(query);
   const cacheKey = `articles:${JSON.stringify(validatedQuery)}`;
-  const cached = await getCache(cacheKey);
+  const cached = await getCache<CachedArticlesResult>(cacheKey);
   if (cached) return cached;
 
   const { isPublished, page, limit, search, author, fromDate, toDate, category } = validatedQuery;
@@ -48,12 +76,28 @@ export async function getArticles(query: ArticleQueryInput) {
 
   const skip = (page - 1) * limit;
   const [articles, total] = await Promise.all([
-    Article.find(filter).sort({ publishedAt: -1, createdAt: -1 }).skip(skip).limit(limit).lean(),
+    Article.find(filter)
+      .populate("category", "name slug") // دریافت نام و اسلاگ دسته‌بندی
+      .sort({ publishedAt: -1, createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
     Article.countDocuments(filter),
   ]);
 
-  const result = {
-    data: toPlainObjects(articles),
+  const safeArticles = articles.map((article: any) => {
+    const categoryData = article.category as { _id: mongoose.Types.ObjectId; name: string; slug: string } | null;
+    return {
+      ...article,
+      _id: article._id.toString(),
+      category: categoryData?._id?.toString() || "",
+      categoryName: categoryData?.name || "بدون دسته",
+      __v: undefined,
+    };
+  });
+
+  const result: CachedArticlesResult = {
+    data: safeArticles,
     pagination: {
       page,
       limit,
@@ -68,22 +112,37 @@ export async function getArticles(query: ArticleQueryInput) {
   return result;
 }
 
-// سایر توابع بدون تغییر (همان‌هایی که قبلاً داشتیم با mongoose.Types)
 export async function getPublishedArticleBySlug(slug: string) {
   await dbConnect();
-  const article = await Article.findOne({ slug, isPublished: true }).lean();
-  if (article) {
-    void Article.updateOne({ slug }, { $inc: { viewCount: 1 } }).exec();
-    return { ...article, _id: String(article._id) };
-  }
-  return null;
+  const article = await Article.findOne({ slug, isPublished: true })
+    .populate("category", "name slug")
+    .lean();
+  if (!article) return null;
+  // افزایش تعداد بازدید به صورت غیرهمزمان
+  void Article.updateOne({ slug }, { $inc: { viewCount: 1 } }).exec();
+  const categoryData = (article as any).category as { _id: mongoose.Types.ObjectId; name: string; slug: string } | null;
+  return {
+    ...article,
+    _id: article._id.toString(),
+    category: categoryData?._id?.toString() || "",
+    categoryName: categoryData?.name || "بدون دسته",
+    __v: undefined,
+  };
 }
 
 export async function getArticleById(id: string) {
   await dbConnect();
   if (!mongoose.Types.ObjectId.isValid(id)) return null;
-  const article = await Article.findById(id).lean();
-  return article ? { ...article, _id: String(article._id) } : null;
+  const article = await Article.findById(id).populate("category", "name slug").lean();
+  if (!article) return null;
+  const categoryData = (article as any).category as { _id: mongoose.Types.ObjectId; name: string; slug: string } | null;
+  return {
+    ...article,
+    _id: article._id.toString(),
+    category: categoryData?._id?.toString() || "",
+    categoryName: categoryData?.name || "بدون دسته",
+    __v: undefined,
+  };
 }
 
 export async function createArticle(data: CreateArticleInput) {
