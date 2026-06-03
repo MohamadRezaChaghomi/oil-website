@@ -1,23 +1,50 @@
-import { NextRequest } from "next/server";
-import { getCategories, getCategoryTree } from "@/lib/services/categoryService";
-import { apiSuccess, apiError } from "@/lib/utils/apiResponse";
-import { withCors } from "@/lib/cors";
-import { z } from "zod";
+import { NextRequest, NextResponse } from "next/server";
+import { dbConnect } from "@/lib/db";
+import Category from "@/lib/models/Category";
+import Product from "@/lib/models/Product";
 
-const querySchema = z.object({
-  type: z.enum(["product", "article"]).optional(),
-  tree: z.enum(["true", "false"]).optional().transform(v => v === "true"),
-});
-
-export const GET = withCors(async (req: NextRequest) => {
+export async function GET(request: NextRequest) {
   try {
-    const url = new URL(req.url);
-    const rawParams = Object.fromEntries(url.searchParams.entries());
-    const { type, tree } = querySchema.parse(rawParams);
-    const result = tree ? await getCategoryTree(type) : await getCategories(type);
-    return apiSuccess(result);
+    await dbConnect();
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type"); // 'product' یا 'article'
+    const includeProducts = searchParams.get("includeProducts") === "true";
+
+    // شرط فیلتر
+    const filter: any = { isActive: true };
+    if (type) filter.type = type;
+
+    // دریافت دسته‌بندی‌ها
+    const categories = await Category.find(filter).sort({ order: 1 }).lean();
+
+    // اگر نیاز به محصولات باشد، برای هر دسته، محصولات مرتبط را دریافت کن
+    let result = categories.map((cat) => ({
+      ...cat,
+      _id: cat._id.toString(),
+    }));
+
+    if (includeProducts) {
+      const categoriesWithProducts = await Promise.all(
+        result.map(async (cat) => {
+          const products = await Product.find({ category: cat._id, isActive: true })
+            .select("title slug")
+            .lean();
+          return {
+            ...cat,
+            products: products.map((p) => ({
+              _id: p._id.toString(),
+              name: p.title,
+              slug: p.slug,
+            })),
+          };
+        })
+      );
+      result = categoriesWithProducts;
+    }
+
+    return NextResponse.json(result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to fetch categories";
-    return apiError(message, 500);
+    console.error("Error fetching categories:", error);
+    return NextResponse.json({ error: "خطا در دریافت دسته‌بندی‌ها" }, { status: 500 });
   }
-});
+}
