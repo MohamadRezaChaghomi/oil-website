@@ -1,7 +1,7 @@
 // src/app/admin/settings/page.tsx
 import { dbConnect } from "@/lib/db";
-import Setting from "@/lib/models/Setting";
-import { SettingsTable } from "@/components/admin/settings/SettingsTable";
+import Setting from "@/lib/models/Settings";
+import { SettingsTable } from "@/components/admin/Settings/SettingsTable";
 
 async function getSettings() {
   await dbConnect();

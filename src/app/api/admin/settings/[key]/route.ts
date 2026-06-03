@@ -1,51 +1,70 @@
-import { NextRequest } from "next/server";
-import { getSettingByKey, upsertSetting, deleteSetting } from "@/lib/services/settingService";
-import { settingSchema } from "@/lib/validations/settingSchema";
-import { apiSuccess, apiError, apiValidationError } from "@/lib/utils/apiResponse";
-import { ZodError } from "zod";
+// src/app/api/admin/settings/[key]/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { dbConnect } from "@/lib/db";
+import Setting from "@/lib/models/Settings";
 
+// GET: دریافت یک تنظیم با کلید
 export async function GET(
   req: NextRequest,
-  { params }: { params: { key: string } }
+  { params }: { params: Promise<{ key: string }> }
 ) {
   try {
-    const setting = await getSettingByKey(params.key);
-    if (!setting) return apiError("Setting not found", 404);
-    return apiSuccess(setting);
+    await dbConnect();
+    const { key } = await params;
+    const setting = await Setting.findOne({ key }).lean();
+    if (!setting) {
+      return NextResponse.json({ error: "تنظیمات یافت نشد" }, { status: 404 });
+    }
+    return NextResponse.json({ ...setting, _id: setting._id.toString() });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to fetch setting";
-    return apiError(message, 500);
+    console.error("Error fetching setting:", error);
+    return NextResponse.json({ error: "خطا در دریافت تنظیمات" }, { status: 500 });
   }
 }
 
+// PUT: ویرایش تنظیمات (upsert)
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { key: string } }
+  { params }: { params: Promise<{ key: string }> }
 ) {
   try {
+    await dbConnect();
+    const { key } = await params;
     const body = await req.json();
-    const validated = settingSchema.parse({ ...body, key: params.key });
-    const setting = await upsertSetting(validated);
-    return apiSuccess(setting);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      return apiValidationError(error.flatten().fieldErrors);
+    const { value, group, description, isPublic } = body;
+
+    const updated = await Setting.findOneAndUpdate(
+      { key },
+      { value, group, description, isPublic },
+      { new: true, runValidators: true, upsert: false } // upsert: false تا کلید جدید ساخته نشود
+    );
+
+    if (!updated) {
+      return NextResponse.json({ error: "تنظیمات یافت نشد" }, { status: 404 });
     }
-    const message = error instanceof Error ? error.message : "Failed to update setting";
-    return apiError(message, 500);
+
+    return NextResponse.json({ ...updated.toObject(), _id: updated._id.toString() });
+  } catch (error) {
+    console.error("Error updating setting:", error);
+    return NextResponse.json({ error: "خطا در به‌روزرسانی تنظیمات" }, { status: 500 });
   }
 }
 
+// DELETE: حذف تنظیمات با کلید
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { key: string } }
+  { params }: { params: Promise<{ key: string }> }
 ) {
   try {
-    const setting = await deleteSetting(params.key);
-    if (!setting) return apiError("Setting not found", 404);
-    return apiSuccess({ message: "Setting deleted successfully", key: params.key });
+    await dbConnect();
+    const { key } = await params;
+    const deleted = await Setting.findOneAndDelete({ key });
+    if (!deleted) {
+      return NextResponse.json({ error: "تنظیمات یافت نشد" }, { status: 404 });
+    }
+    return NextResponse.json({ message: "تنظیمات با موفقیت حذف شد" });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to delete setting";
-    return apiError(message, 500);
+    console.error("Error deleting setting:", error);
+    return NextResponse.json({ error: "خطا در حذف تنظیمات" }, { status: 500 });
   }
 }
