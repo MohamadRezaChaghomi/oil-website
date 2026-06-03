@@ -1,9 +1,9 @@
-// src/components/admin/articles/ArticleForm.tsx
+// src/components/admin/products/ProductForm.tsx
 "use client";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createArticleSchema } from "@/lib/validations/articleSchema";
+import { createProductSchema } from "@/lib/validations/productSchema";
 import type { z } from "zod";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -14,34 +14,31 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-type ArticleFormData = z.infer<typeof createArticleSchema>;
+type ProductFormData = z.infer<typeof createProductSchema>;
 
 interface Category {
   _id: string;
   name: string;
 }
 
-interface ArticleFormProps {
-  initialData?: Partial<ArticleFormData> & { _id?: string };
+interface ProductFormProps {
+  initialData?: Partial<ProductFormData> & { _id?: string };
   categories: Category[];
   isEditing?: boolean;
 }
 
-export function ArticleForm({ initialData, categories, isEditing = false }: ArticleFormProps) {
+export function ProductForm({ initialData, categories, isEditing = false }: ProductFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const defaultValues: ArticleFormData = {
+  const defaultValues: ProductFormData = {
     title: "",
     slug: "",
-    excerpt: "",
-    content: "",
-    image: "/images/placeholder-article.jpg",
-    author: "Admin",
+    description: "",
+    shortDescription: "",
+    image: "/images/placeholder-product.jpg",
     category: "",
-    publishedAt: undefined,
-    isPublished: false,
-    viewCount: 0,
+    isActive: true,
     ...initialData,
   };
 
@@ -49,15 +46,15 @@ export function ArticleForm({ initialData, categories, isEditing = false }: Arti
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ArticleFormData>({
-    resolver: zodResolver(createArticleSchema),
+  } = useForm<ProductFormData>({
+    resolver: zodResolver(createProductSchema),
     defaultValues,
   });
 
-  const onSubmit = async (data: ArticleFormData) => {
+  const onSubmit = async (data: ProductFormData) => {
     setIsSubmitting(true);
     try {
-      const url = isEditing ? `/api/admin/articles/${initialData?._id}` : "/api/admin/articles";
+      const url = isEditing ? `/api/admin/products/${initialData?._id}` : "/api/admin/products";
       const method = isEditing ? "PUT" : "POST";
       const res = await fetch(url, {
         method,
@@ -65,12 +62,12 @@ export function ArticleForm({ initialData, categories, isEditing = false }: Arti
         body: JSON.stringify(data),
       });
       if (res.ok) {
-        toast.success(isEditing ? "مقاله با موفقیت به‌روزرسانی شد" : "مقاله با موفقیت ایجاد شد");
-        router.push("/admin/articles");
+        toast.success(isEditing ? "محصول با موفقیت به‌روزرسانی شد" : "محصول با موفقیت ایجاد شد");
+        router.push("/admin/products");
         router.refresh();
       } else {
         const err = await res.json();
-        toast.error(err.error || "خطا در ذخیره مقاله");
+        toast.error(err.error || "خطا در ذخیره محصول");
       }
     } catch {
       toast.error("خطا در ارتباط با سرور");
@@ -89,7 +86,7 @@ export function ArticleForm({ initialData, categories, isEditing = false }: Arti
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <Label htmlFor="title">
-            عنوان مقاله <span className="text-orange-500">*</span>
+            عنوان محصول <span className="text-orange-500">*</span>
           </Label>
           <Input id="title" {...register("title")} error={errors.title?.message} />
         </div>
@@ -102,24 +99,18 @@ export function ArticleForm({ initialData, categories, isEditing = false }: Arti
       </div>
 
       <div>
-        <Label htmlFor="excerpt">
-          خلاصه <span className="text-orange-500">*</span>
-        </Label>
-        <Textarea id="excerpt" rows={2} {...register("excerpt")} error={errors.excerpt?.message} />
+        <Label htmlFor="shortDescription">توضیح کوتاه</Label>
+        <Textarea id="shortDescription" rows={2} {...register("shortDescription")} error={errors.shortDescription?.message} />
       </div>
 
       <div>
-        <Label htmlFor="content">
-          متن مقاله <span className="text-orange-500">*</span>
+        <Label htmlFor="description">
+          توضیحات کامل <span className="text-orange-500">*</span>
         </Label>
-        <Textarea id="content" rows={10} {...register("content")} error={errors.content?.message} />
+        <Textarea id="description" rows={6} {...register("description")} error={errors.description?.message} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="author">نویسنده</Label>
-          <Input id="author" {...register("author")} error={errors.author?.message} />
-        </div>
         <div>
           <Label htmlFor="category">
             دسته‌بندی <span className="text-orange-500">*</span>
@@ -131,25 +122,23 @@ export function ArticleForm({ initialData, categories, isEditing = false }: Arti
             {...register("category")}
           />
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="image">تصویر شاخص (آدرس URL)</Label>
-          <Input id="image" {...register("image")} error={errors.image?.message} placeholder="/images/placeholder-article.jpg" />
-        </div>
         <div className="flex items-center gap-2 pt-2">
           <input
             type="checkbox"
-            id="isPublished"
-            {...register("isPublished")}
+            id="isActive"
+            {...register("isActive")}
             className="h-4 w-4 rounded border-border"
           />
-          <Label htmlFor="isPublished">انتشار فوری</Label>
+          <Label htmlFor="isActive">فعال (نمایش در سایت)</Label>
         </div>
       </div>
 
-      <AdminFormActions isSubmitting={isSubmitting} submitLabel={isEditing ? "به‌روزرسانی" : "ایجاد مقاله"} />
+      <div>
+        <Label htmlFor="image">تصویر شاخص (آدرس URL)</Label>
+        <Input id="image" {...register("image")} error={errors.image?.message} placeholder="/images/placeholder-product.jpg" />
+      </div>
+
+      <AdminFormActions isSubmitting={isSubmitting} submitLabel={isEditing ? "به‌روزرسانی" : "ایجاد محصول"} />
     </form>
   );
 }

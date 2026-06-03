@@ -25,7 +25,6 @@ export function Modal({
   cancelText = "انصراف",
   showConfirm = true,
 }: ModalProps) {
-  // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -40,10 +39,10 @@ export function Modal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all duration-200">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 transition-all duration-200">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden border border-gray-200 dark:border-gray-700">
         {/* Header */}
-        <div className="px-6 pt-6 pb-3 border-b border-gray-100 dark:border-gray-700">
+        <div className="px-6 pt-6 pb-3 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             {title}
           </h3>
@@ -51,18 +50,14 @@ export function Modal({
 
         {/* Body */}
         <div className="px-6 py-4">
-          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
             {message}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="min-w-[80px]"
-          >
+        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
+          <Button variant="outline" onClick={onClose} className="min-w-[80px] bg-white text-gray-900 border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
             {cancelText}
           </Button>
           {showConfirm && onConfirm && (

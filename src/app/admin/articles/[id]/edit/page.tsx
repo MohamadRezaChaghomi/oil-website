@@ -4,6 +4,7 @@ import { dbConnect } from "@/lib/db";
 import Article from "@/lib/models/Article";
 import Category from "@/lib/models/Category";
 import { ArticleForm } from "@/components/admin/articles/ArticleForm";
+import { AdminFormLayout } from "@/components/admin/shared/AdminFormLayout";
 import mongoose from "mongoose";
 
 interface Props {
@@ -38,19 +39,9 @@ export default async function EditArticlePage({ params }: Props) {
   const article = await getArticle(id);
   if (!article) notFound();
   const categories = await getCategories();
-
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground relative inline-block">
-          ویرایش مقاله
-          <span className="absolute -bottom-2 right-0 w-12 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></span>
-        </h1>
-        <p className="text-muted-foreground mt-2">تغییرات مورد نظر را اعمال کنید</p>
-      </div>
-      <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6 shadow-sm">
-        <ArticleForm initialData={article} categories={categories} isEditing />
-      </div>
-    </div>
+    <AdminFormLayout title="ویرایش مقاله" description="تغییرات مورد نظر را اعمال کنید">
+      <ArticleForm initialData={article} categories={categories} isEditing />
+    </AdminFormLayout>
   );
 }

@@ -1,4 +1,4 @@
-// src/components/admin/articles/ArticlesTable.tsx
+// src/components/admin/products/ProductsTable.tsx
 "use client";
 
 import Link from "next/link";
@@ -9,21 +9,20 @@ import { Modal } from "@/components/ui/Modal";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-interface Article {
+interface Product {
   _id: string;
   title: string;
   slug: string;
-  author?: string;
-  isPublished: boolean;
-  viewCount: number;
   categoryName: string;
+  isActive: boolean;
+  createdAt: Date;
 }
 
-interface ArticlesTableProps {
-  articles: Article[];
+interface ProductsTableProps {
+  products: Product[];
 }
 
-export function ArticlesTable({ articles }: ArticlesTableProps) {
+export function ProductsTable({ products }: ProductsTableProps) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -38,12 +37,12 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
     if (!selectedId) return;
     setDeletingId(selectedId);
     try {
-      const res = await fetch(`/api/admin/articles/${selectedId}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/products/${selectedId}`, { method: "DELETE" });
       if (res.ok) {
-        toast.success("مقاله با موفقیت حذف شد");
+        toast.success("محصول با موفقیت حذف شد");
         router.refresh();
       } else {
-        toast.error("خطا در حذف مقاله");
+        toast.error("خطا در حذف محصول");
       }
     } catch {
       toast.error("خطا در ارتباط با سرور");
@@ -62,31 +61,35 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
             <tr>
               <th className="px-4 py-3 text-right text-sm font-medium text-foreground">عنوان</th>
               <th className="px-4 py-3 text-right text-sm font-medium text-foreground">دسته‌بندی</th>
-              <th className="px-4 py-3 text-right text-sm font-medium text-foreground">نویسنده</th>
               <th className="px-4 py-3 text-right text-sm font-medium text-foreground">وضعیت</th>
-              <th className="px-4 py-3 text-right text-sm font-medium text-foreground">بازدید</th>
+              <th className="px-4 py-3 text-right text-sm font-medium text-foreground">تاریخ ایجاد</th>
               <th className="px-4 py-3 text-right text-sm font-medium text-foreground">عملیات</th>
-            </tr>
+            </td>
           </thead>
           <tbody className="divide-y divide-border">
-            {articles.map((article) => (
-              <tr key={article._id} className="hover:bg-accent/50 transition-colors">
+            {products.map((product) => (
+              <tr key={product._id} className="hover:bg-accent/50 transition-colors">
                 <td className="px-4 py-3 text-sm text-foreground">
-                  <Link href={`/blog/${article.slug}`} target="_blank" className="hover:text-primary">
-                    {article.title}
+                  <Link href={`/products/${product.slug}`} target="_blank" className="hover:text-primary">
+                    {product.title}
                   </Link>
                 </td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">{article.categoryName}</td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">{article.author || "-"}</td>
+                <td className="px-4 py-3 text-sm text-muted-foreground">{product.categoryName}</td>
                 <td className="px-4 py-3 text-sm">
-                  <AdminStatusBadge isActive={article.isPublished} />
+                  <AdminStatusBadge
+                    isActive={product.isActive}
+                    activeLabel="فعال"
+                    inactiveLabel="غیرفعال"
+                  />
                 </td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">{article.viewCount}</td>
+                <td className="px-4 py-3 text-sm text-muted-foreground">
+                  {new Date(product.createdAt).toLocaleDateString("fa-IR")}
+                </td>
                 <td className="px-4 py-3 text-sm">
                   <AdminTableActions
-                    editHref={`/admin/articles/${article._id}/edit`}
-                    onDelete={() => handleDeleteClick(article._id)}
-                    isDeleting={deletingId === article._id}
+                    editHref={`/admin/products/${product._id}/edit`}
+                    onDelete={() => handleDeleteClick(product._id)}
+                    isDeleting={deletingId === product._id}
                   />
                 </td>
               </tr>
@@ -99,8 +102,8 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={confirmDelete}
-        title="حذف مقاله"
-        message="آیا از حذف این مقاله اطمینان دارید؟ این عمل غیرقابل بازگشت است."
+        title="حذف محصول"
+        message="آیا از حذف این محصول اطمینان دارید؟ این عمل غیرقابل بازگشت است."
         confirmText="حذف"
         cancelText="انصراف"
       />
