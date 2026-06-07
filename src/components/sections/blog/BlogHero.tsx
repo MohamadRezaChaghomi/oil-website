@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 export function BlogHero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white pt-16 hero-section">
-      <div className="absolute inset-0 opacity-20">
+      {/* Animated background pattern */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
         <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern id="blog-hero" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
@@ -17,12 +18,30 @@ export function BlogHero() {
           </defs>
           <rect width="100%" height="100%" fill="url(#blog-hero)" />
         </svg>
-        <motion.div className="absolute top-20 left-10 w-72 h-72 bg-orange-500/20 rounded-full blur-3xl" animate={{ x: [0, 30, -20, 0], y: [0, -20, 10, 0] }} transition={{ duration: 12, repeat: Infinity }} />
-        <motion.div className="absolute bottom-20 right-10 w-80 h-80 bg-green-500/20 rounded-full blur-3xl" animate={{ x: [0, -30, 20, 0], y: [0, 20, -10, 0] }} transition={{ duration: 15, repeat: Infinity }} />
+        <motion.div
+          className="absolute top-20 left-10 w-72 h-72 bg-orange-500/20 rounded-full blur-3xl"
+          animate={{ x: [0, 30, -20, 0], y: [0, -20, 10, 0] }}
+          transition={{ duration: 12, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-10 w-80 h-80 bg-green-500/20 rounded-full blur-3xl"
+          animate={{ x: [0, -30, 20, 0], y: [0, 20, -10, 0] }}
+          transition={{ duration: 15, repeat: Infinity }}
+        />
       </div>
+
       <div className="container mx-auto px-4 py-20 text-center relative z-10">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }} className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-orange-300 text-sm font-medium mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-orange-300 text-sm font-medium mb-6"
+          >
             آخرین مطالب
           </motion.div>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-orange-500 to-orange-300 bg-clip-text text-transparent">
@@ -31,6 +50,18 @@ export function BlogHero() {
           <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
             اخبار، مقالات تخصصی و تحلیل‌های صنعت نفت و گاز
           </p>
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        >
+          <div className="w-6 h-10 border-2 border-orange-400 rounded-full flex justify-center">
+            <div className="w-1 h-2 bg-orange-400 rounded-full mt-2 animate-bounce" />
+          </div>
         </motion.div>
       </div>
     </section>
